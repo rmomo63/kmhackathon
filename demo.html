@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ja" style="height: 100%;">
+<head>
+<meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+    function sendsend() {
+        console.log("testtest");
+        user = document.getElementById("user").value;
+        timer = Number(document.getElementById("timer_minute").value * 60);
+        timer += Number(document.getElementById("timer_second").value);
+        myform = document.getElementById("formbd");
+        myform.action = "https://cm-hackathon-s-rmomo63.c9users.io/user/" + user + "/";
+        
+        if(myform.state_select.value == "custom"){
+            myform.state.value = myform.state_custom.value;
+        }else{
+            myform.state.value = myform.state_select.value;
+        }
+        
+        myform.expired.value = parseInt(timer) * 1000;
+        myform.submit();
+    }
+</script>
+
+<style>
+    body{
+        font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Yu Gothic", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
+    
+    }
+    .zero{
+        height:30%;
+        text-align: center;
+        margin:10%;
+    }
+
+    .second div{
+        text-align: center;
+        padding: 1%;
+    }
+
+    .team {
+        text-align:right;
+        height:10%;
+        margin:3%;
+        -webkit-animation: spin 3.0s linear infinite;
+        -moz-animation: spin 3.0s linear infinite;
+        -ms-animation: spin 3.0s linear infinite;
+        -o-animation: spin 3.0s linear infinite;
+        animation: spin 3.0s linear infinite;
+    }
+
+    /*@-webkit-keyframes spin {*/
+    /*    0% {-webkit-transform: rotate(0deg);}*/
+    /*    100% {-webkit-transform: rotate(360deg);}*/
+    /*}*/
+    /*@-moz-keyframes spin {*/
+    /*    0% {-moz-transform: rotate(0deg);}*/
+    /*    100% {-moz-transform: rotate(360deg);}*/
+    /*}*/
+    /*@-ms-keyframes spin {*/
+    /*    0% {-ms-transform: rotate(0deg);}*/
+    /*    100% {-ms-transform: rotate(360deg);}*/
+    /*}*/
+    /*@-o-keyframes spin {*/
+    /*    0% {-o-transform: rotate(0deg);}*/
+    /*    100% {-o-transform: rotate(360deg);}*/
+    /*}*/
+    /*@keyframes spin {*/
+    /*    0% {transform: rotate(0deg);}*/
+    /*    100% {transform: rotate(360deg);}*/
+    /*}*/
+    
+    .fm {
+        border-radius: 5px;
+        background: white;
+        border: 2px solid black;
+        padding: 8px;
+	    width: 100%;
+    }
+    
+    .fm-time {
+        font-size: 1.5vw;
+        border-radius: 5px;
+        background: white;
+        border: 2px solid black;
+        padding: 8px;
+	    width: 10vw;
+    }
+        
+    li {
+        list-style: none;
+        font-size: 2vw;
+    }
+    
+    #formbd {
+        width: 50vw;
+        margin: 0 auto;
+    }
+    
+    .fm-title {
+        font-size: 3vw;
+        text-align: left;
+        margin-top: 5%;
+        margin-bottom: 1%;
+    }
+    
+    #submit-button {
+        padding: 15px 40px;
+        font-size: 1.2em;
+        background-color: #000;
+        color: #fff;
+        border-style: none;
+        width: 30vw;
+        margin-top: 5%;
+    }
+
+    
+</style>
+
+<title>DEMO</title>
+</head>
+
+<body style="margin: 0%">
+    <div class="team">IMAOKITA</div>
+    <!--<div class="zero">-->
+    <!--    <span style="font-size:300%;">今はダメです</span>-->
+    <!--</div>-->
+    <!--<div class="one">-->
+    <!--    <span>username :<span>-->
+    <!--    <span><input type="text" name="user" id="user"></span>-->
+    <!--</div>-->
+    <div class="second">
+        <!--<div>-->
+        <!--    <span>timer :</span>-->
+        <!--    <span><input type="number" id="timer_minute" value="0"></span>-->
+        <!--    <span>分</span>-->
+        <!--    <span><input type="number" id="timer_second" value="0"></span>-->
+        <!--    <span>秒</span>-->
+        <!--</div>-->
+        <!--<form id="myform" onsubmit="sendsend();" method="GET" target="dummy">-->
+        <!--    <div>-->
+        <!--        <input type="number" name="expired" id="expired" value="0" style="display:none;">-->
+        <!--        <input type="radio" name="state" value="busy" checked="checked">忙しい-->
+        <!--        <input type="radio" name="state" value="free">暇人-->
+        <!--    </div>-->
+        <!--    <div><input type="submit" value="送信"></div>-->
+        <!--</form>-->
+        
+        <form id="formbd" method="GET" onsubmit="sendsend();" target="dummy">
+            <input type="hidden" name="state" value="">
+            <ul id="css3form">
+                <li class="fm-title">Username</li>
+                <li><input id="user" class="fm" type="text" name="user"></li>
+                <li class="fm-title">Timer</li>
+                <li>
+                    <span><input class="fm-time" type="number" id="timer_minute" placeholder="mm"></span>
+                    <span>:</span>
+                    <span><input class="fm-time" type="number" id="timer_second" placeholder="ss"></span>
+                </li>
+                <li class="fm-title">State</li>
+                <li>
+                    <input type="number" name="expired" id="expired" value="0" style="display:none;">
+                    <input type="radio" name="state_select" value="busy" checked="checked">Busy
+                    <input type="radio" name="state_select" value="free">Free<br>
+                    <input type="radio" name="state_select" value="custom">
+                    <span><input class="fm-time" type="text" name="state_custom" id="custom" placeholder="Lunch"></span>
+                </li>
+                <li class="fm-title">Color (RGB Hex w/o #)</li>
+                <li>
+                    <span><input class="fm-time" type="text" name="color" value="ffffff"></span>
+                </li>
+            </ul>
+            <div><input id="submit-button" type="submit" value="submit"></div>
+        </form>
+    </div>
+    <iframe name="dummy" style="display:none"></iframe>
+</body>
+</html>

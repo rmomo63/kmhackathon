@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="jp">
+<head>
+    <meta charset="UTF-8">
+    <title>Are you busy?</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://use.fontawesome.com/8f487ccf9d.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <style type="text/css">
+        body{
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Yu Gothic", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
+            background-color: #000;
+            color: #fff;
+            padding: 2vh 0;
+        }
+        #users{
+            display: -webkit-flex;
+            display: flex;
+            flex-wrap:wrap;
+            margin: 0 auto;
+        }
+        #users li{
+            list-style: none;
+            margin: 0.5vw;
+            display: block;
+            width: 22vw;
+            height: 20vh;
+            border: solid 0.1vh #000;
+            box-sizing: border-box;
+            padding: 0.1vh;
+            line-height: 7vh;
+            text-align: center;
+            font-weight: bold;
+            font-size: 2vw;
+        }
+        
+        #users li span.state{
+            font-size: 3vw;
+        }
+        
+        #users li span{
+            font-size: 1vw;
+            line-height: 2vh;
+        }
+        
+        a {
+            text-decoration: none;
+        }
+        
+        #users div{
+            width: 100vw;
+            height: 100vh;
+            line-height: 100vh;
+            text-align: center;
+        }
+    </style> 
+</head>
+<body>
+    <ul id='users'>
+        <div>
+            <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+        </div>
+    </ul>
+    
+    <script type="text/javascript">
+        var socket = io.connect();
+        socket.emit('getList');
+        
+        setInterval(() => {
+            socket.emit('getList');
+        }, 1000);
+        
+        socket.on('showList', function (users) {
+            console.log(users);
+            $("ul#users").empty();
+            
+            for (user in users) {
+                var li = $("<li>");
+                var color = '#' + users[user].color;
+                li.css('background-color', color);
+                li.css('color', blackOrWhite ( color ));
+                
+                var time = "";
+                if(users[user].expired){
+                    time = comDateFormat(new Date( (users[user].start_time + (users[user].expired + 1000)) - new Date().getTime() ), 'あとmm分ss秒')
+                }
+                
+                li.html(user + '<br><span class="state">' + users[user].state + '</state><br>');
+                
+                li.append($('<span>').html(time));
+                
+                var link = $("<a>").attr('href', 'https://cm-hackathon-s-rmomo63.c9users.io/user/' + user + '/');
+                link.attr('target', 'blank')
+                link.html(li);
+                
+                $("ul#users").append(link);
+            }
+        });
+        
+        function blackOrWhite ( hexcolor ) {
+        	var r = parseInt( hexcolor.substr( 1, 2 ), 16 ) ;
+        	var g = parseInt( hexcolor.substr( 3, 2 ), 16 ) ;
+        	var b = parseInt( hexcolor.substr( 5, 2 ), 16 ) ;
+        
+        	return ( ( ( (r * 299) + (g * 587) + (b * 114) ) / 1000 ) < 128 ) ? "white" : "black" ;
+        }
+        
+        function comDateFormat(date, format){
+    		var result = format;
+    
+    		var f;
+    		var rep;
+    
+    		var yobi = new Array('日', '月', '火', '水', '木', '金', '土');
+    
+    		f = 'yyyy';
+    		if ( result.indexOf(f) > -1 ) {
+    			rep = date.getFullYear();
+    			result = result.replace(/yyyy/, rep);
+    		}
+    
+    		f = 'MM';
+    		if ( result.indexOf(f) > -1 ) {
+    			rep = comPadZero(date.getMonth() + 1, 2);
+    			result = result.replace(/MM/, rep);
+    		}
+    
+    		f = 'ddd';
+    		if ( result.indexOf(f) > -1 ) {
+    			rep = yobi[date.getDay()];
+    			result = result.replace(/ddd/, rep);
+    		}
+    
+    		f = 'dd';
+    		if ( result.indexOf(f) > -1 ) {
+    			rep = comPadZero(date.getDate(), 2);
+    			result = result.replace(/dd/, rep);
+    		}
+    
+    		f = 'HH';
+    		if ( result.indexOf(f) > -1 ) {
+    			rep = comPadZero(date.getHours(), 2);
+    			result = result.replace(/HH/, rep);
+    		}
+    
+    		f = 'mm';
+    		if ( result.indexOf(f) > -1 ) {
+    			rep = comPadZero(date.getMinutes(), 2);
+    			result = result.replace(/mm/, rep);
+    		}
+    
+    		f = 'ss';
+    		if ( result.indexOf(f) > -1 ) {
+    			rep = comPadZero(date.getSeconds(), 2);
+    			result = result.replace(/ss/, rep);
+    		}
+    
+    		f = 'fff';
+    		if ( result.indexOf(f) > -1 ) {
+    			rep = comPadZero(date.getMilliseconds(), 3);
+    			result = result.replace(/fff/, rep);
+    		}
+    
+    		return result;
+    
+    	}
+    	
+    	function comPadZero(value, length){
+    	    return new Array(length - ('' + value).length + 1).join('0') + value;
+    	}
+    </script>
+</body>
+</html>

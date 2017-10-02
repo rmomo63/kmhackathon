@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="jp">
+<head>
+    <meta charset="UTF-8">
+    <title>Are you busy?</title>
+    <script src="https://use.fontawesome.com/8f487ccf9d.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body{
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Yu Gothic", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
+        
+        	background-color: #000;
+        	color: #fff;
+        }
+        body *{
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        #name{
+            font-size: 4vw;
+        	text-align: center;
+        }
+        #text{
+            width: 100vw;
+            height: 80vh;
+            line-height: 90vh;
+            font-size: 15vw;
+        }
+        #time{
+            width: 100vw;
+            height: 5vh;
+            line-height: 5vh;
+            font-size: 2vw;
+        }
+        #text div{
+            width: 100vw;
+            height: 100vh;
+            line-height: 100vh;
+            text-align: center;
+            font-size: 5vw;
+        }
+    </style>
+</head>
+<body id="body">
+	<h2 id="name"></h2>
+    <h1 id="text">
+        <div>
+            <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+        </div>
+    </h1>
+    <p id="time"></p>
+    <p id="time2"></p>
+<script>
+    var socket = io.connect();
+    var expired = 0;
+    var timer;
+    
+    socket.on('update', function (data) {
+        console.log(data);
+        if(window.location.href.indexOf('/' + data.username + '/') != -1){
+            document.getElementById("name").innerHTML = data.username;
+            document.getElementById("text").innerHTML = data.state;
+            
+            var color = '#' + data.color;
+            document.getElementById("body").style.backgroundColor = color; 
+            document.getElementById("body").style.color = blackOrWhite(color);
+            
+            if(timer){
+            	clearInterval(timer);
+            }
+            
+            if (data.expired){
+                document.getElementById("time").innerHTML = comDateFormat(new Date( data.start_time + data.expired ), 'HH時mm分ss秒まで');
+                
+                expired = data.expired;
+           
+                timer = setInterval(function() {
+                	if (expired >= 0) {
+                		expired -= 1000;
+                	}
+					document.getElementById("time2").innerHTML = comDateFormat(new Date( expired ), 'mm分ss秒');
+			    }, 1000);
+            	
+            } else {
+            	document.getElementById("time").innerHTML = "";
+                document.getElementById("time2").innerHTML = "";
+            }
+        }   
+    });
+
+    
+    function blackOrWhite ( hexcolor ) {
+    	var r = parseInt( hexcolor.substr( 1, 2 ), 16 ) ;
+    	var g = parseInt( hexcolor.substr( 3, 2 ), 16 ) ;
+    	var b = parseInt( hexcolor.substr( 5, 2 ), 16 ) ;
+    
+    	return ( ( ( (r * 299) + (g * 587) + (b * 114) ) / 1000 ) < 128 ) ? "white" : "black" ;
+    }
+	function comDateFormat(date, format){
+
+		var result = format;
+
+		var f;
+		var rep;
+
+		var yobi = new Array('日', '月', '火', '水', '木', '金', '土');
+
+		f = 'yyyy';
+		if ( result.indexOf(f) > -1 ) {
+			rep = date.getFullYear();
+			result = result.replace(/yyyy/, rep);
+		}
+
+		f = 'MM';
+		if ( result.indexOf(f) > -1 ) {
+			rep = comPadZero(date.getMonth() + 1, 2);
+			result = result.replace(/MM/, rep);
+		}
+
+		f = 'ddd';
+		if ( result.indexOf(f) > -1 ) {
+			rep = yobi[date.getDay()];
+			result = result.replace(/ddd/, rep);
+		}
+
+		f = 'dd';
+		if ( result.indexOf(f) > -1 ) {
+			rep = comPadZero(date.getDate(), 2);
+			result = result.replace(/dd/, rep);
+		}
+
+		f = 'HH';
+		if ( result.indexOf(f) > -1 ) {
+			rep = comPadZero(date.getHours(), 2);
+			result = result.replace(/HH/, rep);
+		}
+
+		f = 'mm';
+		if ( result.indexOf(f) > -1 ) {
+			rep = comPadZero(date.getMinutes(), 2);
+			result = result.replace(/mm/, rep);
+		}
+
+		f = 'ss';
+		if ( result.indexOf(f) > -1 ) {
+			rep = comPadZero(date.getSeconds(), 2);
+			result = result.replace(/ss/, rep);
+		}
+
+		f = 'fff';
+		if ( result.indexOf(f) > -1 ) {
+			rep = comPadZero(date.getMilliseconds(), 3);
+			result = result.replace(/fff/, rep);
+		}
+
+		return result;
+
+	}
+	
+	function comPadZero(value, length){
+	    return new Array(length - ('' + value).length + 1).join('0') + value;
+	}
+</script>
+ 
+</body>
+</html>
